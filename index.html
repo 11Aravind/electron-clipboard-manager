@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Clipboard Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: white;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #f5f5f5;
+            border-bottom: 1px solid #ddd;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .clear-all {
+            font-size: 14px;
+            color: black;
+            cursor: pointer;
+        }
+
+        #clipboardItems {
+            padding: 10px 20px;
+        }
+
+        .clipboard-item {
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            background-color: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .clipboard-item:hover {
+            background-color: #f0f8ff;
+        }
+
+        .clipboard-item.selected {
+            background-color: #e1f5fe;
+            border-left: 3px solid #0288d1;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>Clipboard</div>
+        <div class="clear-all" onclick="clearClipboard()">Clear All</div>
+    </div>
+
+    <div id="clipboardItems"></div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        let items = [];
+        let selectedIndex = 0;
+
+        function renderItems() {
+            const container = document.getElementById('clipboardItems');
+            container.innerHTML = '';
+
+            items.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = `clipboard-item ${index === selectedIndex ? 'selected' : ''}`;
+                div.textContent = item;
+                div.addEventListener('click', () => {
+                    selectedIndex = index;
+                    ipcRenderer.send('paste-item', item);
+                });
+                container.appendChild(div);
+            });
+        }
+
+        function clearClipboard() {
+            items = [];
+            selectedIndex = 0;
+            renderItems();
+            ipcRenderer.send('clear-all-items');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown') {
+                selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+                renderItems();
+            } else if (e.key === 'ArrowUp') {
+                selectedIndex = Math.max(selectedIndex - 1, 0);
+                renderItems();
+            } else if (e.key === 'Enter') {
+                ipcRenderer.send('paste-item', items[selectedIndex]);
+            } else if (e.key === 'Escape') {
+                ipcRenderer.send('close-window');
+            }
+        });
+
+        ipcRenderer.on('load-items', (event, loadedItems) => {
+            items = loadedItems;
+            selectedIndex = 0;
+            renderItems();
+        });
+
+        ipcRenderer.on('new-item', (event, item) => {
+            items.unshift(item);
+            selectedIndex = 0;
+            renderItems();
+        });
+    </script>
+</body>
+</html>

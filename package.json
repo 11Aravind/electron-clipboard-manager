@@ -1,0 +1,29 @@
+{
+  "name": "clipboard-manager",
+  "version": "1.0.0",
+  "description": "A simple clipboard manager for Ubuntu",
+  "author": {
+    "name": "Aravind A S",
+    "email": "aravindas247@gmail.com"
+  },
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --linux"
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0"
+  },
+  "devDependencies": {
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.example.clipboardmanager",
+    "linux": {
+      "target": "deb",
+      "category": "Utility",
+      "icon": "icon.png"
+    }
+  }
+}
