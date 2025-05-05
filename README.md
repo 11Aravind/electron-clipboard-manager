@@ -17,7 +17,7 @@ A simple clipboard history manager for Ubuntu built using Electron. Easily acces
 
 ### Option 1: Install via `.deb` package
 
-1. **Download the latest `.deb` file** from [Releases](https://github.com/yourusername/clipboard-manager/releases)
+1. **Download the latest `.deb` file** from [Releases](https://github.com/11Aravind/electron-clipboard-manager/releases)
 2. Install it:
 
 ```bash
